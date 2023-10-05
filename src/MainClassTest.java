@@ -1,3 +1,4 @@
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -24,4 +25,15 @@ public class MainClassTest {
             System.out.println("getClassNumber return: " + testClass.getClassNumber());
         }
     }
+
+    @Test
+    public void testGetClassString(){
+        if (testClass.getClassString().contains("Hello") || testClass.getClassString().contains("hello")){
+            System.out.println("\nMethod getClassString contains Hello/hello");
+        }
+        else {
+            Assert.fail("\nMethod getClassString does not contains Hello/hello");
+        }
+    }
+
 }

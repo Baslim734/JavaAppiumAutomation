@@ -77,6 +77,25 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void testCompareWordsInSearchResults(){
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"),
+                "Cannot find 'Search Wikipedia' input");
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Oil",
+                "Cannot find search input");
+        assertElementHasText(By.xpath("//*[contains(@text,'Oil')]"),"Oil",
+                "'Oil' was not found in text field"
+        );
+        assertElementHasText(By.xpath("//*[contains(@text,'Oil platform')]"),"Oil platform",
+                "'Oil platform' was not found in text field"
+        );
+        assertElementHasText(By.xpath("//*[contains(@text,'Oil spill')]"),"Oil spill",
+                "'Oil spill' was not found in text field"
+        );
+    }
+
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds){
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");

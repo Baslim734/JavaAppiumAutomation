@@ -40,6 +40,34 @@ public class FirstTest {
     }
 
     @Test
+    public void testSearchAndCancel(){
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"),
+                "Cannot find 'Search Wikipedia' input");
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Oil",
+                "Cannot find search input");
+
+        waitForElementPresent(By.xpath("//*[contains(@text,'Viscous water-insoluble liquid')]"),
+                "First result was not found");
+        waitForElementPresent(By.xpath("//*[contains(@text,'Oil platform')]"),
+                "Second result was not found");
+        waitForElementPresent(By.xpath("//*[contains(@text,'Oil spill')]"),
+                "Third result was not found");
+        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"),
+                "Cannot find 'Search Wikipedia' input");
+        waitForElementNotPresent(By.xpath("//*[contains(@text,'Viscous water-insoluble liquid')]"),
+                "First result still on screen",
+                5);
+        waitForElementNotPresent(By.xpath("//*[contains(@text,'Oil platform')]"),
+                "Second result still on screen",
+                5);
+        waitForElementNotPresent(By.xpath("//*[contains(@text,'Oil spill')]"),
+                "Third result still on screen",
+                5);
+    }
+
+    @Test
     public void testCompareInstalledTextInField(){
         //так как android.widget.TextView не содержит своего уникального id,а завязаться на класс не самая лучшая идея
         // (так как android.widget.TextView может быть несколько на странице)

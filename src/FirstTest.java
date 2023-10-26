@@ -12,32 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 
-public class FirstTest {
-
-    private AppiumDriver driver;
-
-    @Before
-    public void setUp() throws Exception
-    {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-
-        capabilities.setCapability("platformName","Android");
-        capabilities.setCapability("deviceName","AndroidTestDevice");
-        capabilities.setCapability("platformVersion","8.1.0");
-        capabilities.setCapability("automationName","Appium");
-        capabilities.setCapability("appPackage","org.wikipedia");
-        capabilities.setCapability("appActivity",".main.MainActivity");
-        capabilities.setCapability("app","/Users/nikitabirukov/Desktop/JavaAppiumAutomation/JavaAppiumAutomation/apks/org.wikipedia.apk");
-
-        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
-
-    }
-
-    @After
-    public void tearDrown()
-    {
-        driver.quit();
-    }
+public class FirstTest extends BaseMetods{
 
     @Test
     public void testSearchAndCancel(){
@@ -94,57 +69,6 @@ public class FirstTest {
         assertElementHasText(By.xpath("//*[contains(@text,'Oil spill')]"),"Oil spill",
                 "'Oil spill' was not found in text field"
         );
-    }
-
-    private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds){
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        wait.withMessage(error_message + "\n");
-        return wait.until(
-            ExpectedConditions.presenceOfElementLocated(by)
-        );
-    }
-
-    private WebElement waitForElementPresent(By by, String error_message){
-       return waitForElementPresent(by,error_message,5);
-    }
-    private WebElement waitForElementAndClick(By by, String error_message){
-        WebElement element = waitForElementPresent(by,error_message,5);
-        element.click();
-        return element;
-    }
-
-    private WebElement waitForElementAndSendKeys(By by,String value, String error_message){
-        WebElement element = waitForElementPresent(by,error_message,5);
-        element.sendKeys(value);
-        return element;
-    }
-
-    private boolean waitForElementNotPresent(By by, String error_message,long timeoutInSeconds){
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        wait.withMessage(error_message + "\n");
-        return wait.until(
-                ExpectedConditions.invisibilityOfElementLocated(by)
-        );
-    }
-
-    private  WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds){
-        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
-        element.clear();
-        return element;
-    }
-
-    private WebElement assertElementHasText(By by,String textInElement, String error_message){
-        WebElement tittle_element = waitForElementPresent(
-               by, error_message
-        );
-        String article_tittle = tittle_element.getAttribute("text");
-
-        Assert.assertEquals(
-                error_message,
-                textInElement,
-                article_tittle
-        );
-        return tittle_element;
     }
 
 }

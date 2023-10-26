@@ -1,5 +1,4 @@
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
@@ -36,6 +35,8 @@ public class BaseMetods {
     @After
     public void tearDrown()
     {
+
+
         driver.quit();
     }
 
@@ -162,6 +163,11 @@ public class BaseMetods {
             Assert.fail("Cannout find element with index =  " + elementIndex);
         }
     }
+    public void assertElementPresent(By by, String error_message) {
+        List element = driver.findElements(by);
+        Assert.assertFalse(error_message, element.isEmpty());
+    }
+
 
 
 }

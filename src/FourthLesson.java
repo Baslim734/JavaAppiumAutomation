@@ -57,4 +57,25 @@ public class FourthLesson extends BaseMetods {
                 "Title does not match");
 
     }
+
+    @Test
+    public void testCheckTittle(){
+        waitForElementAndClick(By.id("org.wikipedia:id/fragment_onboarding_skip_button"),
+                "Cannot find skip button");
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"),
+                "Cannot find 'Search Wikipedia' input");
+
+        String article_tittle = "Cinnamon";
+        String second_article_tittle = "Cinnamon (desktop environment)";
+        String page_list_id = "org.wikipedia:id/page_list_item_title";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                article_tittle,
+                "Cannot find search input");
+        waitForElementsAndClick(By.id(page_list_id),1,
+                "Cant find second tittle");
+        assertElementPresent(By.xpath("//android.view.View[@content-desc='"+ second_article_tittle +"']"),
+                "Not found element tittle");
+
+    }
 }

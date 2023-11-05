@@ -61,4 +61,17 @@ public class SearchTests extends CoreTestCase {
         ArticlePageObject.expectTheTextInEachResult("Oil");
     }
 
+    @Test
+    public void testCheckResultByTittleAndDescrption(){
+
+        SearchPageObject = new SearchPageObject(driver);
+        ArticlePageObject = new ArticlePageObject(driver);
+
+        SearchPageObject.startAppSkipButton();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Electricity");
+
+        SearchPageObject.findThreeSearchResultByTittleAndDescription("Electricity","electric");
+
+    }
 }

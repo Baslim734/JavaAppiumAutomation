@@ -1,7 +1,10 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileElement;
 import org.openqa.selenium.By;
+
+import java.util.List;
 
 
 public class SearchPageObject extends MainPageObject {
@@ -12,7 +15,9 @@ public class SearchPageObject extends MainPageObject {
             SEARCH_INPUT = "org.wikipedia:id/search_src_text",
             SEARCH_BY_TEXT_TPL = "//*[contains(@text,'{SUBSTRING}')]",
             CLOSE_SEARCH_BUTTON = "org.wikipedia:id/search_close_btn",
-            PAGE_LIST_ID = "org.wikipedia:id/page_list_item_title";
+            PAGE_LIST_ID = "org.wikipedia:id/page_list_item_title",
+            TITLE_AND_DESCRIPTION_SEARCH_RESULT_TPL = "//android.view.ViewGroup[.//android.widget.TextView[contains(@text, '{SUBSTRING_TITTLE}')] and .//android.widget.TextView[contains(@text, '{SUBSTRING_DESC}')]]";
+
 
     public SearchPageObject(AppiumDriver driver) {
         super(driver);
@@ -20,6 +25,11 @@ public class SearchPageObject extends MainPageObject {
 
     private static String getResultSearchElement(String substring) {
         return SEARCH_BY_TEXT_TPL.replace("{SUBSTRING}", substring);
+    }
+
+    private static String getLocatorByTittleAndDescription(String tittle, String description) {
+        String newXpath = TITLE_AND_DESCRIPTION_SEARCH_RESULT_TPL.replace("{SUBSTRING_TITTLE}", tittle);
+        return newXpath.replace("{SUBSTRING_DESC}", description);
     }
 
     public void initSearchInput() {
@@ -39,6 +49,7 @@ public class SearchPageObject extends MainPageObject {
 
     public void typeSearchLine(String search_line) {
         this.waitForElementAndSendKeys(By.id(SEARCH_INPUT), search_line, "Cannot find and type into search input");
+        driver.hideKeyboard();
     }
 
     public void waitForSearchResult(String substring) {
@@ -65,4 +76,18 @@ public class SearchPageObject extends MainPageObject {
         this.assertElementHasText(By.xpath(search_result_xpath), substring, "Other text in searchline inputed, must be:" + substring);
     }
 
+    public void waitForElementByTittleAndDescription(String tittle, String description) {
+        String newXpath = getLocatorByTittleAndDescription(tittle, description);
+        this.waitForElementPresent(By.xpath(newXpath), "Not found result with title: " + tittle + " and description: " + description, 10);
+    }
+
+    public void findThreeSearchResultByTittleAndDescription(String tittle, String description) {
+        waitForElementByTittleAndDescription(tittle, description);
+        String newXpath = getLocatorByTittleAndDescription(tittle, description);
+        List<MobileElement> elements = driver.findElements(By.xpath(newXpath));
+        assertTrue("Found three or more search result:", elements.size() >= 3);
+        assertFalse("Found least then three search result: " + elements.size(), elements.size() < 3);
+    }
+
 }
+

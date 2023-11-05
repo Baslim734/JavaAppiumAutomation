@@ -1,46 +1,25 @@
+package lib.ui;
+
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import lib.CoreTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.net.URL;
 import java.util.List;
 
-public class BaseMetods {
-    private AppiumDriver driver;
+public class MainPageObject extends CoreTestCase {
 
-    @Before
-    public void setUp() throws Exception
-    {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
+    protected static AppiumDriver driver;
 
-        capabilities.setCapability("platformName","Android");
-        capabilities.setCapability("deviceName","AndroidTestDevice");
-        capabilities.setCapability("platformVersion","8.1.0");
-        capabilities.setCapability("automationName","Appium");
-        capabilities.setCapability("appPackage","org.wikipedia");
-        capabilities.setCapability("appActivity",".main.MainActivity");
-        capabilities.setCapability("app","/Users/nikitabirukov/Desktop/JavaAppiumAutomation/JavaAppiumAutomation/apks/org.wikipedia.apk");
-
-        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
-    }
-    @After
-    public void tearDrown()
-    {
-        driver.rotate(ScreenOrientation.PORTRAIT);
-        driver.quit();
+    public MainPageObject(AppiumDriver driver) {
+        this.driver = driver;
     }
 
-    WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds){
+    public WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
         return wait.until(
@@ -48,19 +27,20 @@ public class BaseMetods {
         );
     }
 
-    WebElement waitForElementPresent(By by, String error_message){
-        return waitForElementPresent(by,error_message,5);
+    public WebElement waitForElementPresent(By by, String error_message) {
+        return waitForElementPresent(by, error_message, 5);
     }
-    WebElement waitForElementAndClick(By by, String error_message){
-        WebElement element = waitForElementPresent(by,error_message,5);
+
+    public WebElement waitForElementAndClick(By by, String error_message) {
+        WebElement element = waitForElementPresent(by, error_message, 5);
         element.click();
         return element;
     }
 
-    WebElement waitForElementWithTextAndClick(By by,String text, String error_message){
-        WebElement element = waitForElementPresent(by,error_message,5);
+    public WebElement waitForElementWithTextAndClick(By by, String text, String error_message) {
+        WebElement element = waitForElementPresent(by, error_message, 5);
         String tittle_element = element.getAttribute("text");
-        Assert.assertEquals(
+        assertEquals(
                 error_message,
                 text,
                 tittle_element
@@ -69,13 +49,13 @@ public class BaseMetods {
         return element;
     }
 
-    WebElement waitForElementAndSendKeys(By by, String value, String error_message){
-        WebElement element = waitForElementPresent(by,error_message,5);
+    public WebElement waitForElementAndSendKeys(By by, String value, String error_message) {
+        WebElement element = waitForElementPresent(by, error_message, 5);
         element.sendKeys(value);
         return element;
     }
 
-    boolean waitForElementNotPresent(By by, String error_message, long timeoutInSeconds){
+    public boolean waitForElementNotPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
         return wait.until(
@@ -83,46 +63,44 @@ public class BaseMetods {
         );
     }
 
-    private  WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds){
+    public WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.clear();
         return element;
     }
 
-    WebElement assertElementHasText(By by, String textInElement, String error_message){
+    public WebElement assertElementHasText(By by, String textInElement, String error_message) {
         WebElement tittle_element = waitForElementPresent(
                 by, error_message
         );
         String article_tittle = tittle_element.getAttribute("text");
 
-        Assert.assertEquals(
+        assertEquals(
                 error_message,
                 textInElement,
                 article_tittle
         );
         return tittle_element;
     }
-    protected void swipeUp(int timeOfSwipe)
-    {
+
+    protected void swipeUp(int timeOfSwipe) {
         TouchAction action = new TouchAction(driver);
         Dimension size = driver.manage().window().getSize();
-        int x = size.width/2;
+        int x = size.width / 2;
         int start_y = (int) (size.height * 0.8);
         int end_y = (int) (size.height * 0.2);
         action.press(x, start_y).waitAction(timeOfSwipe).moveTo(x, end_y).release().perform();
     }
 
-    protected void swipeUpQuick()
-    {
+    public void swipeUpQuick() {
         swipeUp(200);
     }
 
-    protected void swipeUpToFindElement(By by, String error_message,int max_swipes)
-    {
+    protected void swipeUpToFindElement(By by, String error_message, int max_swipes) {
         int already_swiped = 0;
-        while (driver.findElements(by).isEmpty()){
+        while (driver.findElements(by).isEmpty()) {
 
-            if(already_swiped > max_swipes){
+            if (already_swiped > max_swipes) {
                 waitForElementPresent(by, "Cannot find element by swiping up. \n" + error_message, 0);
                 return;
             }
@@ -132,8 +110,7 @@ public class BaseMetods {
         }
     }
 
-    protected void swipeElementToLeft(By by, String error_message)
-    {
+    public void swipeElementToLeft(By by, String error_message) {
         WebElement element = waitForElementPresent(
                 by,
                 error_message,
@@ -153,21 +130,40 @@ public class BaseMetods {
                 .release()
                 .perform();
     }
-    protected void waitForElementsAndClick(By by, int elementIndex, String errorMessage) {
+
+    public void waitForElementsAndClick(By by, int elementIndex, String errorMessage) {
         waitForElementPresent(by, errorMessage);
         List<WebElement> elements = driver.findElements(by);
         if (elementIndex < elements.size()) {
             WebElement element = elements.get(elementIndex);
             element.click();
         } else {
-            Assert.fail("Cannout find element with index =  " + elementIndex);
+            fail("Cannout find element with index =  " + elementIndex);
         }
     }
-    public void assertElementPresent(By by, String error_message) {
-        List element = driver.findElements(by);
-        Assert.assertFalse(error_message, element.isEmpty());
+
+    public void waitForElementsAndClickWithText(By by, int elementIndex, String errorMessage) {
+        waitForElementPresent(by, errorMessage);
+        List<WebElement> elements = driver.findElements(by);
+        if (elementIndex < elements.size()) {
+            WebElement element = elements.get(elementIndex);
+            String text = element.getText();
+            assertFalse("There is no text in element", element.getText() == null);
+            System.out.println("Text in element: " + text);
+            element.click();
+        } else {
+            fail("Cannot find element with index =  " + elementIndex);
+        }
     }
 
+    public void assertElementPresent(By by, String error_message) {
+        List element = driver.findElements(by);
+        assertFalse(error_message, element.isEmpty());
+    }
 
+    public void checkForElementIsEnabled(By by) {
+        WebElement element = driver.findElement(by);
+        assertTrue("Element is not enabled", element.isEnabled());
+    }
 
 }

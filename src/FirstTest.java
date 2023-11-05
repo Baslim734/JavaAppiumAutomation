@@ -1,74 +1,110 @@
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import org.junit.After;
-import org.junit.Before;
+import lib.CoreTestCase;
+import lib.ui.*;
 import org.junit.Test;
-import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.net.URL;
+public class FirstTest extends CoreTestCase {
 
-public class FirstTest extends BaseMetods{
+    private SearchPageObject SearchPageObject;
+    private ArticlePageObject ArticlePageObject;
+    private NavigationUI NavigationUI;
+    private MyListsPageObject MylistsPageObject;
 
-    @Test
-    public void testSearchAndCancel(){
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input");
-        waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text,'Search…')]"),
-                "Oil",
-                "Cannot find search input");
-
-        waitForElementPresent(By.xpath("//*[contains(@text,'Viscous water-insoluble liquid')]"),
-                "First result was not found");
-        waitForElementPresent(By.xpath("//*[contains(@text,'Oil platform')]"),
-                "Second result was not found");
-        waitForElementPresent(By.xpath("//*[contains(@text,'Oil spill')]"),
-                "Third result was not found");
-        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"),
-                "Cannot find 'Search Wikipedia' input");
-        waitForElementNotPresent(By.xpath("//*[contains(@text,'Viscous water-insoluble liquid')]"),
-                "First result still on screen",
-                5);
-        waitForElementNotPresent(By.xpath("//*[contains(@text,'Oil platform')]"),
-                "Second result still on screen",
-                5);
-        waitForElementNotPresent(By.xpath("//*[contains(@text,'Oil spill')]"),
-                "Third result still on screen",
-                5);
+    protected void setUp() throws Exception {
+        super.setUp();
+        SearchPageObject = new SearchPageObject(driver);
     }
 
     @Test
-    public void testCompareInstalledTextInField(){
-        //так как android.widget.TextView не содержит своего уникального id,а завязаться на класс не самая лучшая идея
-        // (так как android.widget.TextView может быть несколько на странице)
-        assertElementHasText(By.xpath("//*[contains(@text,'Search Wikipedia')]"),"Search Wikipedia",
-                "'Search Wikipedia' was not found in text field"
-                );
+    public void testSearch() {
+        SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.startAppSkipButton();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.waitForSearchResult("Object-oriented programming language");
+    }
+
+    @Test
+    public void testSearchAndCancel() {
+        SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.startAppSkipButton();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Oil");
+        SearchPageObject.waitForSearchResult("Viscous water-insoluble liquid");
+        SearchPageObject.waitForSearchResult("Programme headed by the United Nations");
+        SearchPageObject.waitForSearchResult("Oil platform");
+        SearchPageObject.closeSearch();
+        SearchPageObject.waitForSearchResultDissapear("Viscous water-insoluble liquid");
+        SearchPageObject.waitForSearchResultDissapear("Programme headed by the United Nations");
+        SearchPageObject.waitForSearchResultDissapear("Oil platform");
+    }
+
+    @Test
+    public void testCompareInstalledTextInField() {
+        SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.startAppSkipButton();
+        SearchPageObject.compareSearchInputedText("Search Wikipedia");
 
     }
 
     @Test
-    public void testCompareWordsInSearchResults(){
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input");
-        waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text,'Search…')]"),
-                "Oil",
-                "Cannot find search input");
-        assertElementHasText(By.xpath("//*[contains(@text,'Oil')]"),"Oil",
-                "'Oil' was not found in text field"
-        );
-        assertElementHasText(By.xpath("//*[contains(@text,'Oil platform')]"),"Oil platform",
-                "'Oil platform' was not found in text field"
-        );
-        assertElementHasText(By.xpath("//*[contains(@text,'Oil spill')]"),"Oil spill",
-                "'Oil spill' was not found in text field"
-        );
+    public void testCompareWordsInSearchResults() {
+        SearchPageObject = new SearchPageObject(driver);
+        ArticlePageObject = new ArticlePageObject(driver);
+
+        SearchPageObject.startAppSkipButton();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Oil");
+        ArticlePageObject.expectTheTextInEachResult("Oil");
+    }
+
+    @Test
+    public void testSavingTwoArticles() {
+        SearchPageObject = new SearchPageObject(driver);
+        ArticlePageObject = new ArticlePageObject(driver);
+        NavigationUI = new NavigationUI(driver);
+        MylistsPageObject = new MyListsPageObject(driver);
+
+        SearchPageObject.startAppSkipButton();
+
+
+        String article_tittle = "Cinnamon";
+        String article_list_name = article_tittle + " list";
+        String second_article_tittle = "Cinnamon (desktop environment)";
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(article_tittle);
+        SearchPageObject.clickBySearchResult(0);
+        ArticlePageObject.createNewListAndAddArticle(article_list_name);
+        ArticlePageObject.closeArticle();
+        SearchPageObject.clickBySearchResult(1);
+        ArticlePageObject.addArticleToExistingList(article_list_name);
+        ArticlePageObject.closeArticle();
+        NavigationUI.backToMainPage();
+        NavigationUI.goToSavedList();
+        MylistsPageObject.deleteFirstArticle(article_list_name);
+        MylistsPageObject.checkArticleTitle(second_article_tittle);
+
+    }
+
+    @Test
+    public void testCheckTittle() {
+        SearchPageObject = new SearchPageObject(driver);
+        ArticlePageObject = new ArticlePageObject(driver);
+        NavigationUI = new NavigationUI(driver);
+        MylistsPageObject = new MyListsPageObject(driver);
+
+        String article_tittle = "Cinnamon";
+        String second_article_tittle = "Cinnamon (desktop environment)";
+
+        SearchPageObject.startAppSkipButton();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(article_tittle);
+        SearchPageObject.clickBySearchResult(0);
+        ArticlePageObject.checkTittle(second_article_tittle);
+
     }
 
 }

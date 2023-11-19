@@ -11,14 +11,14 @@ import static org.junit.Assert.assertTrue;
 public class ArticlePageObject extends MainPageObject {
 
     private static final String
-            RESULT_ARTICLE_TITTLE_ID = "org.wikipedia:id/page_list_item_title",
-            BUTTON_SAVE_ID = "org.wikipedia:id/page_save",
-            BUTTON_ADD_TO_LIST = "//*[contains(@text,'Add to list')]",
-            INPUT_LIST_NAME_STRING = "//*[contains(@text,'Name of this list')]",
-            BUTTON_OK = "//*[contains(@text,'OK')]",
-            SEARCH_BY_TEXT_TPL = "//*[contains(@text,'{SUBSTRING}')]",
-            BUTTON_BACK = "//android.widget.ImageButton[@content-desc='Navigate up']",
-            ARTICLE_TITTLE_ID_TPL = "//android.view.View[contains(@content-desc,'{SUBSTRING}')]";
+            RESULT_ARTICLE_TITTLE_ID = "id:org.wikipedia:id/page_list_item_title",
+            BUTTON_SAVE_ID = "id:org.wikipedia:id/page_save",
+            BUTTON_ADD_TO_LIST = "xpath://*[contains(@text,'Add to list')]",
+            INPUT_LIST_NAME_STRING = "xpath://*[contains(@text,'Name of this list')]",
+            BUTTON_OK = "xpath://*[contains(@text,'OK')]",
+            SEARCH_BY_TEXT_TPL = "xpath://*[contains(@text,'{SUBSTRING}')]",
+            BUTTON_BACK = "xpath://android.widget.ImageButton[@content-desc='Navigate up']",
+            ARTICLE_TITTLE_ID_TPL = "/xpath:/android.view.View[contains(@content-desc,'{SUBSTRING}')]";
 
     public ArticlePageObject(AppiumDriver driver) {
         super(driver);
@@ -33,24 +33,24 @@ public class ArticlePageObject extends MainPageObject {
     }
 
     public void createNewListAndAddArticle(String article_list_name) {
-        this.waitForElementAndClick(By.id(BUTTON_SAVE_ID), "Cant find save button");
-        this.waitForElementAndClick(By.xpath(BUTTON_ADD_TO_LIST),
+        this.waitForElementAndClick(BUTTON_SAVE_ID, "Cant find save button");
+        this.waitForElementAndClick(BUTTON_ADD_TO_LIST,
                 "Cant find add to list button");
         this.waitForElementAndSendKeys(
-                By.xpath(INPUT_LIST_NAME_STRING),
+                INPUT_LIST_NAME_STRING,
                 article_list_name,
                 "Cannot find search input");
-        this.waitForElementAndClick(By.xpath(BUTTON_OK)
+        this.waitForElementAndClick(BUTTON_OK
                 , "Cant find OK button");
     }
 
     public void addArticleToExistingList(String article_list_name) {
-        this.waitForElementAndClick(By.id(BUTTON_SAVE_ID),
+        this.waitForElementAndClick(BUTTON_SAVE_ID,
                 "Cant find save button");
-        this.waitForElementAndClick(By.xpath(BUTTON_ADD_TO_LIST),
+        this.waitForElementAndClick(BUTTON_ADD_TO_LIST,
                 "Cant find add to list button");
         String provided_list = getElementByText(article_list_name);
-        this.waitForElementAndClick(By.xpath(provided_list),
+        this.waitForElementAndClick(provided_list,
                 "Cant find list: " + article_list_name);
     }
 
@@ -63,13 +63,13 @@ public class ArticlePageObject extends MainPageObject {
     }
 
     public void closeArticle() {
-        this.waitForElementAndClick(By.xpath(BUTTON_BACK),
+        this.waitForElementAndClick(BUTTON_BACK,
                 "Cant find back button");
     }
 
     public void checkTittle(String article_tittle) {
         String provided_tittle = getTittle(article_tittle);
-        this.assertElementPresent(By.xpath(provided_tittle),
+        this.assertElementPresent(provided_tittle,
                 "Not found element tittle");
     }
 

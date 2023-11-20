@@ -5,6 +5,7 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import lib.CoreTestCase;
+import lib.Platform;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
@@ -79,7 +80,12 @@ public class MainPageObject extends CoreTestCase {
         WebElement tittle_element = waitForElementPresent(
                 locator, error_message
         );
-        String article_tittle = tittle_element.getAttribute("text");
+        String article_tittle;
+        if (Platform.getInstance().isIOS()) {
+            article_tittle = tittle_element.getAttribute("name");
+        } else {
+            article_tittle = tittle_element.getAttribute("text");
+        }
 
         assertEquals(
                 error_message,
@@ -177,17 +183,16 @@ public class MainPageObject extends CoreTestCase {
         assertTrue("Element is not enabled", element.isEnabled());
     }
 
-    private By getLocatorByString(String locator_with_type)
-    {
-        String[] exploded_locator = locator_with_type.split(Pattern.quote(":"),2);
+    private By getLocatorByString(String locator_with_type) {
+        String[] exploded_locator = locator_with_type.split(Pattern.quote(":"), 2);
         String by_type = exploded_locator[0];
         String locator = exploded_locator[1];
 
-        if (by_type.equals(("xpath"))){
+        if (by_type.equals(("xpath"))) {
             return By.xpath(locator);
-        } else if (by_type.equals("id")){
+        } else if (by_type.equals("id")) {
             return By.id(locator);
-        }else {
+        } else {
             throw new IllegalArgumentException("Cannot get type of lcator: " + locator_with_type);
         }
     }

@@ -3,9 +3,9 @@ package lib.ui;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 
-public class MyListsPageObject extends MainPageObject {
+abstract public class MyListsPageObject extends MainPageObject {
 
-    private final static String
+    protected static String
             ARTICLE_IN_LIST = "id:org.wikipedia:id/page_list_item_title",
             FOLDER_LIST_TPL = "xpath://android.widget.TextView[@text='{SUBSTRING}']",
             ARTICLE_TITTLE_TPL = "xpath://android.view.View[@content-desc='{SUBSTRING}']";

@@ -2,21 +2,23 @@ package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
+import lib.Platform;
 import org.openqa.selenium.By;
 
 import java.util.List;
 
 
-public class SearchPageObject extends MainPageObject {
+abstract public class SearchPageObject extends MainPageObject {
 
-    private static final String
-            SEARCH_INIT_ELEMENT = "id:org.wikipedia:id/search_container",
-            START_APP_SKIP_BUTTON = "id:org.wikipedia:id/fragment_onboarding_skip_button",
-            SEARCH_INPUT = "id:org.wikipedia:id/search_src_text",
-            SEARCH_BY_TEXT_TPL = "xpath://*[contains(@text,'{SUBSTRING}')]",
-            CLOSE_SEARCH_BUTTON = "id:org.wikipedia:id/search_close_btn",
-            PAGE_LIST_ID = "id:org.wikipedia:id/page_list_item_title",
-            TITLE_AND_DESCRIPTION_SEARCH_RESULT_TPL = "xpath://android.view.ViewGroup[.//android.widget.TextView[contains(@text, '{SUBSTRING_TITTLE}')] and .//android.widget.TextView[contains(@text, '{SUBSTRING_DESC}')]]";
+    protected static String
+            SEARCH_INIT_ELEMENT,
+            START_APP_SKIP_BUTTON,
+            SEARCH_INPUT,
+            SEARCH_INPUT_TEXT_TPL,
+            SEARCH_BY_TEXT_TPL,
+            CLOSE_SEARCH_BUTTON,
+            PAGE_LIST_ID,
+            TITLE_AND_DESCRIPTION_SEARCH_RESULT_TPL;
 
 
     public SearchPageObject(AppiumDriver driver) {
@@ -26,6 +28,11 @@ public class SearchPageObject extends MainPageObject {
     private static String getResultSearchElement(String substring) {
         return SEARCH_BY_TEXT_TPL.replace("{SUBSTRING}", substring);
     }
+
+    private static String getInputSearchText(String substring) {
+        return SEARCH_INPUT_TEXT_TPL.replace("{SUBSTRING}", substring);
+    }
+
 
     private static String getLocatorByTittleAndDescription(String tittle, String description) {
         String newXpath = TITLE_AND_DESCRIPTION_SEARCH_RESULT_TPL.replace("{SUBSTRING_TITTLE}", tittle);
@@ -49,12 +56,18 @@ public class SearchPageObject extends MainPageObject {
 
     public void typeSearchLine(String search_line) {
         this.waitForElementAndSendKeys(SEARCH_INPUT, search_line, "Cannot find and type into search input");
-        driver.hideKeyboard();
     }
 
     public void waitForSearchResult(String substring) {
         String search_result_xpath = getResultSearchElement(substring);
         this.waitForElementPresent(search_result_xpath, "Cannot find result with substring: " + substring);
+        if (Platform.getInstance().isAndroid()) {
+            driver.hideKeyboard();
+        }
+    }
+
+    private static String getNextResultById(String ID) {
+        return PAGE_LIST_ID.replace("{SUBSTRING}", ID);
     }
 
     public void clickByArticleWithSubstring(String substring) {
@@ -62,8 +75,15 @@ public class SearchPageObject extends MainPageObject {
         this.waitForElementAndClick(search_result_xpath, "Cannot click result with substring: " + substring);
     }
 
+
     public void clickBySearchResult(Integer newInt) {
-        this.waitForElementsAndClickWithText(PAGE_LIST_ID, newInt, "There is no result with index: " + newInt);
+        if (Platform.getInstance().isIOS()) {
+            newInt++;
+            String nextResult = getNextResultById(newInt + "");
+            this.waitForElementAndClick(nextResult, "Cant get element with index " + newInt);
+        } else {
+            this.waitForElementsAndClickWithText(PAGE_LIST_ID, newInt, "There is no result with index: " + newInt);
+        }
     }
 
     public void waitForSearchResultDissapear(String substring) {
@@ -72,8 +92,8 @@ public class SearchPageObject extends MainPageObject {
     }
 
     public void compareSearchInputedText(String substring) {
-        String search_result_xpath = getResultSearchElement(substring);
-        this.assertElementHasText(search_result_xpath, substring, "Other text in searchline inputed, must be:" + substring);
+        String search_input_xpath = getInputSearchText(substring);
+        this.assertElementHasText(search_input_xpath, substring, "Other text in searchline inputed, must be:" + substring);
     }
 
     public void waitForElementByTittleAndDescription(String tittle, String description) {
